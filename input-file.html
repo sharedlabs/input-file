@@ -1,0 +1,85 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`input-file`
+
+@demo demo/index.html
+-->
+
+<dom-module id="input-file">
+  <template>
+
+    <input
+        id="fileInput"
+        type="file"
+        on-change="_inputChange"
+        multiple$="[[multiple]]"
+        accept$="[[accept]]"
+        disabled$="[[disabled]]">
+
+  </template>
+</dom-module>
+
+<script>
+(function() {
+  'use strict';
+
+  Polymer({
+
+    is: 'input-file',
+
+    properties: {
+
+      multiple: {
+        type: Boolean,
+        value: true
+      },
+
+      accept: {
+        type: String,
+        value: 'image/*'
+      },
+
+      disabled: Boolean
+
+    },
+
+    _inputChange(event) {
+      const files = event.target.files;
+      const onFilesSelectedEvent = this.fire('files-selected', files, {
+        cancelable: true
+      });
+
+      if (!onFilesSelectedEvent.defaultPrevented) {
+        this._createLocalUrls(files).then(this.fire('load', {files}));
+      }
+    },
+
+    _createLocalUrls(files) {
+      const req = [];
+
+      for (let file of files) {
+        req.push(new Promise((resolve, reject) => {
+          const img = new Image;
+          const url = URL.createObjectURL(file);
+
+          img.src = url;
+          img.onerror = reject;
+          img.onload = () => {
+            file.url = Promise.resolve([{
+              url,
+              width: img.width,
+              height: img.height
+            }]);
+            resolve();
+          };
+        }));
+      }
+
+      return Promise.all(req);
+    },
+
+  });
+
+}());
+</script>
