@@ -46,7 +46,7 @@
 
     _inputChange(event) {
       const files = event.target.files;
-      const onFilesSelectedEvent = this.fire('files-selected', files, {
+      const onFilesSelectedEvent = this.fire('files-selected', {files}, {
         cancelable: true
       });
 
