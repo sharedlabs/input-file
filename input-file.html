@@ -44,6 +44,17 @@
 
     },
 
+    listeners: {
+      'click': '_onClick'
+    },
+
+    _onClick(event) {
+      // propagate click to input
+      if (event.target === this) {
+        this.$.fileInput.click();
+      }
+    },
+
     _inputChange(event) {
       const files = event.target.files;
       const onFilesSelectedEvent = this.fire('files-selected', {files}, {
