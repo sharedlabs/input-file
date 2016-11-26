@@ -51,7 +51,7 @@
       });
 
       if (!onFilesSelectedEvent.defaultPrevented) {
-        this._createLocalUrls(files).then(this.fire('load', {files}));
+        this._createLocalUrls(files).then(_ => this.fire('load', {files}));
       }
     },
 
@@ -60,6 +60,13 @@
 
       for (let file of files) {
         req.push(new Promise((resolve, reject) => {
+          const isImage = /image\/.*/.exec(file.type);
+
+          if (!isImage) {
+            return resolve();
+          }
+
+          // Get width and height for images
           const img = new Image;
           const url = URL.createObjectURL(file);
 
@@ -69,13 +76,12 @@
             file.url = Promise.resolve([{
               url,
               width: img.width,
-              height: img.height
+              height: img.height,
             }]);
             resolve();
           };
         }));
       }
-
       return Promise.all(req);
     },
 
