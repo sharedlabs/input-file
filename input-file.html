@@ -84,7 +84,7 @@
           img.src = url;
           img.onerror = reject;
           img.onload = () => {
-            file.url = Promise.resolve([{
+            file.urls = Promise.resolve([{
               url,
               width: img.width,
               height: img.height,
