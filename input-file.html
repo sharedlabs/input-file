@@ -50,7 +50,7 @@
 
     _onClick(event) {
       // propagate click to input
-      if (event.target === this) {
+      if (event.path[0] === this) {
         this.$.fileInput.click();
       }
     },
