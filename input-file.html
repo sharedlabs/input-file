@@ -48,6 +48,10 @@
       'click': '_onClick'
     },
 
+    selectFiles() {
+      this.$.fileInput.click();
+    },
+
     _onClick(event) {
       // propagate click to input
       if (event.path[0] === this) {
