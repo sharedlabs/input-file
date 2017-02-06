@@ -62,15 +62,18 @@
     _inputChange(event) {
       const files = event.target.files;
       const onFilesSelectedEvent = this.fire('files-selected', {files}, {
+        bubbles: true,
         cancelable: true
       });
 
       if (!onFilesSelectedEvent.defaultPrevented) {
-        this._createLocalUrls(files).then(_ => this.fire('load', {files}));
+        this._setLocalImageUrls(files).then(_ => {
+          this.fire('files-loaded', {files});
+        });
       }
     },
 
-    _createLocalUrls(files) {
+    _setLocalImageUrls(files) {
       const req = [];
 
       for (let file of files) {
@@ -87,12 +90,12 @@
 
           img.src = url;
           img.onerror = reject;
-          img.onload = () => {
-            file.urls = Promise.resolve([{
+          img.onload = _ => {
+            file.images = [{
               url,
               width: img.width,
               height: img.height,
-            }]);
+            }];
             resolve();
           };
         }));
