@@ -18,5 +18,14 @@
 
     <input-file></input-file>
 
+    <script>
+      window.addEventListener('files-selected', event => {
+        console.log('files-selected', event.detail.files);
+      });
+
+      document.querySelector('input-file').addEventListener('files-loaded', event => {
+        console.log('files-loaded', event.detail.files);
+      });
+    </script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <!--
 `input-file`
@@ -18,92 +18,99 @@
         disabled$="[[disabled]]">
 
   </template>
-</dom-module>
+  <script>
+    
+    class InputFile extends Polymer.Element {
 
-<script>
-(function() {
-  'use strict';
+      static get is() {return 'input-file';}
 
-  Polymer({
+      static get config() {
+        return {
+          properties: {
 
-    is: 'input-file',
+            multiple: {
+              type: Boolean,
+              value: true
+            },
 
-    properties: {
+            accept: {
+              type: String,
+              value: 'image/*'
+            },
 
-      multiple: {
-        type: Boolean,
-        value: true
-      },
+            disabled: Boolean
 
-      accept: {
-        type: String,
-        value: 'image/*'
-      },
+          },
 
-      disabled: Boolean
+          listeners: {
+            'click': '_onClick'
+          }
+        };
+      }
 
-    },
-
-    listeners: {
-      'click': '_onClick'
-    },
-
-    selectFiles() {
-      this.$.fileInput.click();
-    },
-
-    _onClick(event) {
-      // propagate click to input
-      if (event.path[0] === this) {
+      selectFiles() {
         this.$.fileInput.click();
       }
-    },
 
-    _inputChange(event) {
-      const files = event.target.files;
-      const onFilesSelectedEvent = this.fire('files-selected', {files}, {
-        bubbles: true,
-        cancelable: true
-      });
+      _onClick(event) {
+        // propagate click to input
+        if (event.composedPath()[0] === this) {
+          this.$.fileInput.click();
+        }
+      }
 
-      if (!onFilesSelectedEvent.defaultPrevented) {
-        this._setLocalImageUrls(files).then(_ => {
-          this.fire('files-loaded', {files});
+      _inputChange(event) {
+        const files = event.target.files;
+        const filesSelectedEvent = new CustomEvent('files-selected', {
+          detail: {files},
+          bubbles: true,
+          cancelable: true
         });
+
+        this.dispatchEvent(filesSelectedEvent);
+        
+        if (!filesSelectedEvent.defaultPrevented) {
+          this._setLocalImageUrls(files).then(_ => {
+            this.dispatchEvent(new CustomEvent('files-loaded', {
+              detail: {files}
+            }));
+          });
+        }
       }
-    },
 
-    _setLocalImageUrls(files) {
-      const req = [];
+      _setLocalImageUrls(files) {
+        const req = [];
 
-      for (let file of files) {
-        req.push(new Promise((resolve, reject) => {
-          const isImage = /image\/.*/.exec(file.type);
+        for (let file of files) {
+          req.push(new Promise((resolve, reject) => {
+            const isImage = /image\/.*/.exec(file.type);
 
-          if (!isImage) {
-            return resolve();
-          }
+            if (!isImage) {
+              return resolve();
+            }
 
-          // Get width and height for images
-          const img = new Image;
-          const url = URL.createObjectURL(file);
+            // Get width and height for images
+            const img = new Image;
+            const url = URL.createObjectURL(file);
 
-          img.src = url;
-          img.onerror = reject;
-          img.onload = _ => {
-            file.images = [{
-              url,
-              width: img.width,
-              height: img.height,
-            }];
-            resolve();
-          };
-        }));
+            img.src = url;
+            img.onerror = reject;
+            img.onload = _ => {
+              file.images = [{
+                url,
+                width: img.width,
+                height: img.height,
+              }];
+              resolve();
+            };
+          }));
+        }
+        return Promise.all(req);
       }
-      return Promise.all(req);
-    },
 
-  });
+    }
 
-}());
-</script>
+    customElements.define(InputFile.is, InputFile);
+
+  </script>
+</dom-module>
