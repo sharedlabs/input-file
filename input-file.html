@@ -24,39 +24,26 @@
 
       static get is() {return 'input-file';}
 
-      static get config() {
+      static get properties() {
         return {
-          properties: {
 
-            multiple: {
-              type: Boolean,
-              value: true
-            },
-
-            accept: {
-              type: String,
-              value: 'image/*'
-            },
-
-            disabled: Boolean
-
+          multiple: {
+            type: Boolean,
+            value: true
           },
 
-          listeners: {
-            'click': '_onClick'
-          }
+          accept: {
+            type: String,
+            value: 'image/*'
+          },
+
+          disabled: Boolean
+
         };
       }
 
       selectFiles() {
         this.$.fileInput.click();
-      }
-
-      _onClick(event) {
-        // propagate click to input
-        if (event.composedPath()[0] === this) {
-          this.$.fileInput.click();
-        }
       }
 
       _inputChange(event) {
