@@ -51,7 +51,8 @@
         const filesSelectedEvent = new CustomEvent('files-selected', {
           detail: {files},
           bubbles: true,
-          cancelable: true
+          cancelable: true,
+          composed: true
         });
 
         this.dispatchEvent(filesSelectedEvent);
