@@ -13,7 +13,7 @@
         id="fileInput"
         type="file"
         on-change="_inputChange"
-        multiple$="[[multiple]]"
+        multiple$="[[!nomultiple]]"
         accept$="[[accept]]"
         disabled$="[[disabled]]">
 
@@ -27,9 +27,9 @@
       static get properties() {
         return {
 
-          multiple: {
+          nomultiple: {
             type: Boolean,
-            value: true
+            value: false
           },
 
           accept: {
